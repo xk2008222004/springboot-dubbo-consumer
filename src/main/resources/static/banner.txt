@@ -1,0 +1,2 @@
+this is a 自定义special banner
+${spring-boot.formatted-version}
