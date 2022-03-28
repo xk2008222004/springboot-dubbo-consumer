@@ -4,7 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 #排除logging开头文件
-logging*
+logging*.log
 
 ### STS ###
 .apt_generated
