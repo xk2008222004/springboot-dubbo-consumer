@@ -1,12 +1,14 @@
 package com.example.dubbo.springbootdubboconsumer;
 
 import com.alibaba.dubbo.spring.boot.annotation.EnableDubboConfiguration;
+import com.example.dubbo.springbootdubboconsumer.bo.CorsBo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.core.env.Environment;
 
@@ -16,7 +18,8 @@ import java.util.Set;
 
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 @EnableDubboConfiguration
-@ServletComponentScan(basePackages = "com.example.dubbo.springbootdubboconsumer.listener")
+@ServletComponentScan(basePackages = "com.example.dubbo.springbootdubboconsumer.*")
+@EnableConfigurationProperties(CorsBo.class)
 public class SpringbootDubboConsumerApplication {
 
     private static Logger logger = LoggerFactory.getLogger(SpringbootDubboConsumerApplication.class);
