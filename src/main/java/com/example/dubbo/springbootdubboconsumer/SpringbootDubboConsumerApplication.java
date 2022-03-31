@@ -41,6 +41,7 @@ public class SpringbootDubboConsumerApplication {
 
             }
         });*/
+        //System.setProperty("spring.xml.ignore","true");
         SpringApplication springApplication = new SpringApplication(SpringbootDubboConsumerApplication.class);
         /*springApplication.addListeners(new ApplicationListener<ApplicationStartingEvent>() {
             @Override

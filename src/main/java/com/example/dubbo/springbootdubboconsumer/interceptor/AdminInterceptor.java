@@ -15,7 +15,8 @@ public class AdminInterceptor implements HandlerInterceptor {
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         logger.info("===============preHandler");
-        String user = (String)request.getSession().getAttribute("user");
+        //String user = (String)request.getSession().getAttribute("user");
+        String user = "";
         return user==null?false:true;
     }
 

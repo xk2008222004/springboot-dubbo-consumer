@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet(urlPatterns = "/*",name = "secondServlet")
+@WebServlet(urlPatterns = "/servlet2",name = "secondServlet")
 public class MyServlet2 extends HttpServlet {
 
     @Override
