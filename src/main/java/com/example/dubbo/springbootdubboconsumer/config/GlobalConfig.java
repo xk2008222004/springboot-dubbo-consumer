@@ -1,6 +1,7 @@
 package com.example.dubbo.springbootdubboconsumer.config;
 
 import com.example.dubbo.springbootdubboconsumer.interceptor.AdminInterceptor;
+import com.example.springbootdubbo.po.BuziException;
 import com.example.springbootdubbo.po.ResultObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,7 +21,9 @@ import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConvert
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.http.converter.xml.SourceHttpMessageConverter;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -33,13 +36,15 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestResponseBody
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @Slf4j
-public class LoginConfig implements WebMvcConfigurer {
+public class GlobalConfig implements WebMvcConfigurer {
 
 
     public void addInterceptors(InterceptorRegistry registry) {
@@ -65,23 +70,63 @@ public class LoginConfig implements WebMvcConfigurer {
 
     }
 
-    public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
+    /*public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
+        HandlerExceptionResolver handlerExceptionResolver2 = new HandlerExceptionResolver() {
+            @Override
+            public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+               response.addHeader("Content-Type","application/json;charset=UTF-8");
+               try{
+                   if(ex instanceof BuziException){
+                        new ObjectMapper().writeValue(response.getWriter(),ResultObject.fail("业务异常"));
+                   }else{
+                        new ObjectMapper().writeValue(response.getWriter(),ResultObject.fail("系统异常"));
+                   }
+                    response.getWriter().flush();
+               }catch (IOException ex2){
+                   ex2.printStackTrace();
+               }
+                return new ModelAndView();
+            }
+        };
+        resolvers.add(handlerExceptionResolver2);
+    }*/
 
+    /**
+     * 统一异常处理
+     * @param resolvers
+     */
+    public void extendHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
         HandlerExceptionResolver handlerExceptionResolver = new HandlerExceptionResolver() {
             @Override
             public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-                ModelAndView modelAndView = new ModelAndView();
-                modelAndView.setViewName("500");
-                modelAndView.addObject("message",ex.getMessage());
-                return modelAndView;
+                HandlerMethod handlerMethod = (HandlerMethod)handler;
+                Method method = handlerMethod.getMethod();
+                boolean isResponseBody = handler.getClass().isAnnotationPresent(ResponseBody.class);
+                boolean isRestController = handler.getClass().isAnnotationPresent(RestController.class);
+                boolean methodResponseBody = method.isAnnotationPresent(ResponseBody.class);
+                if(methodResponseBody||isResponseBody||isRestController){
+                    response.addHeader("Content-Type","application/json;charset=UTF-8");
+                    try{
+                        if(ex instanceof BuziException){
+                            new ObjectMapper().writeValue(response.getWriter(),ResultObject.fail(((BuziException) ex).getReturnMessage()));
+                        }else{
+                            new ObjectMapper().writeValue(response.getWriter(),ResultObject.fail("系统异常"));
+                        }
+                        response.getWriter().flush();
+                    }catch (IOException ex2){
+                        ex2.printStackTrace();
+                    }
+                    return new ModelAndView();
+                }else{
+                    ModelAndView modelAndView = new ModelAndView();
+                    modelAndView.setViewName("500");
+                    modelAndView.addObject("message",ex.getMessage());
+                    return modelAndView;
+                }
             }
         };
         resolvers.add(handlerExceptionResolver);
     }
-
-    /*public void extendHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
-
-    }*/
 
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("upload/**").addResourceLocations("classpath:/upload/");

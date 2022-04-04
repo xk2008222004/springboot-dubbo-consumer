@@ -11,7 +11,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestResponseBody
 import java.util.ArrayList;
 import java.util.List;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class InitializingAdvice implements InitializingBean {
 
     @Autowired

@@ -4,6 +4,7 @@ import com.alibaba.dubbo.spring.boot.annotation.EnableDubboConfiguration;
 import com.example.dubbo.springbootdubboconsumer.bo.CorsBo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,6 +21,7 @@ import java.util.Set;
 @EnableDubboConfiguration
 @ServletComponentScan(basePackages = "com.example.dubbo.springbootdubboconsumer.*")
 @EnableConfigurationProperties(CorsBo.class)
+@EnableRabbit
 public class SpringbootDubboConsumerApplication {
 
     private static Logger logger = LoggerFactory.getLogger(SpringbootDubboConsumerApplication.class);

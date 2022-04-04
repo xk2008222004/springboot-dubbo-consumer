@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.lang.reflect.Method;
 
 @Slf4j
-@Component
-@Aspect
+//@Component
+//@Aspect
 public class BuziExceptionAdvice {
 
     @Pointcut("execution (* com.example.dubbo.springbootdubboconsumer.web.*.*(..))")
@@ -34,7 +34,7 @@ public class BuziExceptionAdvice {
         Class realTarget = point.getTarget().getClass();
         Object result = null;
         if((realMethod.isAnnotationPresent(BuziExceptionHandler.class)||realTarget.isAnnotationPresent(BuziExceptionHandler.class))&&realMethod.isAnnotationPresent(ResponseBody.class)
-        ){//&&realMethod.getReturnType()==ResultObject.class
+                &&realMethod.getReturnType()==ResultObject.class){//
             try{
                 result = point.proceed();
             }catch (BuziException e){
