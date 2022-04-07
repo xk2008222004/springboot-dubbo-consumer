@@ -9,6 +9,9 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Configuration(proxyBeanMethods = false)
 @Slf4j
 public class RabbitMqConfig {
@@ -17,6 +20,18 @@ public class RabbitMqConfig {
     public Queue testDirectQueue(){
         return new Queue(ParamDict.DIRECTQUEUE,true);
     }
+
+    @Bean
+    public Queue logDirectQueue(){
+        return new Queue(ParamDict.LOGDIRECTQUEUE,true);
+    }
+
+    @Bean
+    public Queue lazyLogDirectQueue(){
+        Queue queue = new Queue(ParamDict.LOGDELAYDIRECTQUEUE);
+        return queue;
+    }
+
 
     @Bean
     public Queue getTopicQueue(){
@@ -50,6 +65,20 @@ public class RabbitMqConfig {
         return new DirectExchange(ParamDict.DIRECTEXCHANGE,true,false);
     }
 
+    @Bean
+    public DirectExchange logDirectExchange(){
+        return new DirectExchange(ParamDict.LOGDIRECTQUEUE,true,false);
+    }
+
+    @Bean
+    public CustomExchange lazylogDirectExchange(){
+        //创建一个自定义交换机，可以发送延迟消息
+        Map<String, Object> args = new HashMap<String, Object>();
+        args.put("x-delayed-type", "direct");
+        //channel.exchangeDeclare("my-exchange", "x-delayed-message", true, false, args);
+        CustomExchange directExchange = new CustomExchange(ParamDict.LOGDELAYDIRECTEXCHANGE,"x-delayed-message",false,false,args);
+        return directExchange;
+    }
 
     @Bean
     public TopicExchange getTopicExchange(){
@@ -64,6 +93,17 @@ public class RabbitMqConfig {
     @Bean
     Binding bindingDirect(){
         return BindingBuilder.bind(testDirectQueue()).to(testDirectExchange()).with(ParamDict.DIRECTROUTING);
+    }
+
+    @Bean
+    Binding bindingLogDirect(){
+        return BindingBuilder.bind(logDirectQueue()).to(logDirectExchange()).with(ParamDict.SYSLOGDIRECTROUTING);
+    }
+
+    @Bean
+    Binding bindingLazyLogDirect(){
+        return BindingBuilder.bind(lazyLogDirectQueue()).to(lazylogDirectExchange())
+                .with(ParamDict.SYSLOGDELAYDIRECTROUTING).noargs();
     }
 
     @Bean

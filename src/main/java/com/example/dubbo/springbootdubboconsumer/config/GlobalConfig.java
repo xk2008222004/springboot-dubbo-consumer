@@ -101,8 +101,9 @@ public class GlobalConfig implements WebMvcConfigurer {
             public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
                 HandlerMethod handlerMethod = (HandlerMethod)handler;
                 Method method = handlerMethod.getMethod();
-                boolean isResponseBody = handler.getClass().isAnnotationPresent(ResponseBody.class);
-                boolean isRestController = handler.getClass().isAnnotationPresent(RestController.class);
+                Class c = handlerMethod.getBeanType();
+                boolean isResponseBody = c.isAnnotationPresent(ResponseBody.class);
+                boolean isRestController = c.isAnnotationPresent(RestController.class);
                 boolean methodResponseBody = method.isAnnotationPresent(ResponseBody.class);
                 if(methodResponseBody||isResponseBody||isRestController){
                     response.addHeader("Content-Type","application/json;charset=UTF-8");

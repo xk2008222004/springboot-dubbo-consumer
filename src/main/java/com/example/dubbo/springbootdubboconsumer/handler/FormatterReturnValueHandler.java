@@ -3,6 +3,7 @@ package com.example.dubbo.springbootdubboconsumer.handler;
 import com.example.springbootdubbo.po.ResultObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
@@ -21,7 +22,8 @@ public class FormatterReturnValueHandler implements HandlerMethodReturnValueHand
     @Override
     public boolean supportsReturnType(MethodParameter returnType) {
         log.info("======addReturnValueHandlers=======supportsReturnType===============");
-        return returnType.hasMethodAnnotation(ResponseBody.class);
+        return AnnotatedElementUtils.hasAnnotation(returnType.getContainingClass(), ResponseBody.class) || returnType.hasMethodAnnotation(ResponseBody.class);
+
     }
 
     @Override

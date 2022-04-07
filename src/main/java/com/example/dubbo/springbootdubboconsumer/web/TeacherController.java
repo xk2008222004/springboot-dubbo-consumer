@@ -3,6 +3,7 @@ package com.example.dubbo.springbootdubboconsumer.web;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.example.dubbo.springbootdubboconsumer.config.RabbitMqConfig;
 import com.example.springbootdubbo.annotation.BuziExceptionHandler;
+import com.example.springbootdubbo.annotation.SysLogHandler;
 import com.example.springbootdubbo.dict.ParamDict;
 import com.example.springbootdubbo.po.BuziException;
 import com.example.springbootdubbo.po.ResultObject;
@@ -37,13 +38,9 @@ import java.util.UUID;
 @Controller
 @Slf4j
 @BuziExceptionHandler
+@SysLogHandler
 public class TeacherController {
 
-    //TODO
-    //写异常处理器 返回json格式  还有404处理
-
-    //TODO
-    //
     @Reference(interfaceClass = RedisService.class,version = "1.0.0")
     private RedisService redisService;
 
@@ -70,7 +67,7 @@ public class TeacherController {
 
     @RequestMapping(value="/getRedisValue")
     @ResponseBody
-    public String getRedisValue(String key){
+    public String getRedisValue(@RequestParam(value="key",required = false,defaultValue = "user") String key){
         return (String)redisService.get(key);
     }
 
