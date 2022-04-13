@@ -3,11 +3,11 @@ package com.example.dubbo.springbootdubboconsumer.web;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.example.dubbo.springbootdubboconsumer.vo.SysLogExtNew;
 import com.example.springbootdubbo.annotation.SysLogHandler;
+import com.example.springbootdubbo.po.ResultObject;
 import com.example.springbootdubbo.po.StudentEx;
 import com.example.springbootdubbo.po.SysLog;
-import com.example.springbootdubbo.service.StudentExService;
-import com.example.springbootdubbo.service.StudentService;
-import com.example.springbootdubbo.service.SysLogService;
+import com.example.springbootdubbo.service.*;
+import com.example.springbootdubbo.vo.OrderVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -30,9 +30,21 @@ public class StudentController {
     @Reference(interfaceClass = SysLogService.class,version = "1.0.0")
     private SysLogService sysLogService;
 
+    @Reference(interfaceClass = JedisService.class,version = "1.0.0",check = false)
+    private JedisService jedisService;
+
     /*@Value("${test.ab}")
     @Lazy*/
     private String importPro;
+
+    @Reference(interfaceClass = UserOrderService.class,version = "1.0.0")
+    private UserOrderService userOrderService;
+
+    @PostMapping("/createOrder")
+    public ResultObject createOrder(@RequestBody OrderVo orderVo){
+        ResultObject resultObject = userOrderService.createOrder(orderVo);
+        return resultObject;
+    }
 
     @RequestMapping(value = "/getStudent")
     public String getStudent(@RequestParam(name="id",required = false) Integer id) {
@@ -63,5 +75,17 @@ public class StudentController {
             log.setEndTime(new Date(sysLog.getEndTime()));
         }
         return sysLogService.queryLog(log);
+    }
+
+    @RequestMapping("/getValue")
+    public String getValue(String name){
+        return jedisService.get(name);
+    }
+
+    //方法修饰符必须是public 如果是private则jedisService是null
+    @RequestMapping("/setValue")
+    public String setValue(@RequestParam("name") String name,@RequestParam("value") String value){
+        return jedisService.set(name,value);
+
     }
 }

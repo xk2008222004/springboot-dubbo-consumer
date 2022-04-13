@@ -37,7 +37,6 @@ import java.util.UUID;
 
 @Controller
 @Slf4j
-@BuziExceptionHandler
 @SysLogHandler
 public class TeacherController {
 
@@ -58,10 +57,10 @@ public class TeacherController {
 
     @RequestMapping(value = "/getTeacher",params = "new=123")//status=400
     public @ResponseBody
-    String getStudent(HttpServletRequest request) {
+    String getStudent(HttpServletRequest request,@RequestParam(value="name",required = false,defaultValue = "t1") String name,@RequestParam(value = "value",required = false,defaultValue = "value1") String value) {
         String str = teacherService.getTeacher("焦裕禄");
         request.getSession().setAttribute("user",str);
-        redisService.set("user",str);
+        redisService.set(name,value);
         return str;
     }
 
